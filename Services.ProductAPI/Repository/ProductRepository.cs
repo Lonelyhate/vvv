@@ -16,7 +16,7 @@ public class ProductRepository : IProductRepository
     
     public async Task<List<Product>> GetAll()
     {
-        return _db.Products.Include(p => p.Category).ToList();
+        return _db.Products.Include(p => p.Category).Include(p => p.Brand).ToList();
     }
 
     public async Task<Product> GetById(int id)
@@ -27,14 +27,6 @@ public class ProductRepository : IProductRepository
 
     public async Task<Product> Create(Product model)
     {
-        var category = await _db.Categories.FirstOrDefaultAsync(c => c.Id == model.CategoryId);
-        if (category is null)
-        {
-            _db.AddAsync(model.Category);
-            await _db.SaveChangesAsync();
-        }
-
-        model.Category = category;
         model.DateCreated = DateTime.Now;
         var product = await _db.Products.AddAsync(model);
         await _db.SaveChangesAsync();

@@ -10,15 +10,21 @@ namespace Services.ProductAPI.Services;
 public class ProductService : IProductService
 {
     private readonly IProductRepository _productRepository;
+    private readonly ICategoryRepository _categoryRepository;
+    private readonly IBrandRepository _brandRepository;
     private readonly IMapper _mapper;
-    
-    public ProductService(IProductRepository productRepository, IMapper mapper)
+    private readonly IWebHostEnvironment _webHostEnvironment;
+
+    public ProductService(IProductRepository productRepository, IMapper mapper, IWebHostEnvironment webHostEnvironment, IBrandRepository brandRepository, ICategoryRepository categoryRepository)
     {
         _productRepository = productRepository;
         _mapper = mapper;
+        _webHostEnvironment = webHostEnvironment;
+        _brandRepository = brandRepository;
+        _categoryRepository = categoryRepository;
     }
-    
-    public async Task<ProductCreateResponseModel> CreateProduct(ProductCreateRequestModel requestModel)
+
+    public async Task<ProductCreateResponseModel> CreateProduct(ProductFormViewModel requestModel)
     {
         try
         {
@@ -32,8 +38,52 @@ public class ProductService : IProductService
                 return responseModel;
             }
 
-            var product = await _productRepository.Create(_mapper.Map<Product>(requestModel));
-            responseModel.Data = _mapper.Map<ProductViewModel>(product);
+            var category = await _categoryRepository.GetById(requestModel.CategoryId);
+            if (category is null)
+            {
+                responseModel.isSuccess = false;
+                responseModel.DisplayMessage = "Такой категории не существует";
+                responseModel.StatusCode = StatusCode.BadRequest;
+                return responseModel;
+            }
+            
+            var brand = await _brandRepository.GetById(requestModel.BrandId);
+            if (brand is null)
+            {
+                responseModel.isSuccess = false;
+                responseModel.DisplayMessage = "Такого бренда не существует";
+                responseModel.StatusCode = StatusCode.BadRequest;
+                return responseModel;
+            }
+            
+            var product = new Product
+            {
+                Name = requestModel.Name,
+                BrandId = requestModel.BrandId,
+                Brand = brand,
+                CategoryId = requestModel.CategoryId,
+                Category = category,
+                Sizes = requestModel.Sizes,
+                Price = requestModel.Price,
+                CodeProduct = requestModel.CodeProduct,
+                Description = requestModel.Description
+            };
+            List<string> imgs = new List<string>(); 
+            foreach (var imgFile in requestModel.Images)
+            {
+                string name = $"{Guid.NewGuid()}.{imgFile.ContentType.Split('/')[1]}";
+                string path = Path.Combine(_webHostEnvironment.WebRootPath, name);
+                using (Stream stream = new FileStream(path, FileMode.Create))
+                {
+                    imgFile.CopyTo(stream);
+                }
+                imgs.Add(name);
+            }
+
+            product.Images = string.Join(';', imgs);
+
+            var productCreated = await _productRepository.Create(product);
+            responseModel.Data = _mapper.Map<ProductViewModel>(productCreated);
             responseModel.StatusCode = StatusCode.Created;
             return responseModel;
         }

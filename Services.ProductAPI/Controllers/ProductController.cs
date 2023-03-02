@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Services.ProductAPI.Models.RequsetModels;
+using Services.ProductAPI.Models.ViewModels;
 using Services.ProductAPI.Services.Interfaces;
 
 namespace Services.ProductAPI.Controllers;
@@ -16,7 +17,7 @@ public class ProductController : Controller
     }
     
     [HttpPost("create")]
-    public async Task<IActionResult> CreateProduct(ProductCreateRequestModel model)
+    public async Task<IActionResult> CreateProduct([FromForm] ProductFormViewModel model)
     {
         var response = await _productService.CreateProduct(model);
 

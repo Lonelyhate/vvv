@@ -28,8 +28,8 @@ public class ProductViewModel
     /// <summary>
     /// Разамер
     /// </summary>
-    [JsonPropertyName("size")]
-    public string Size { get; set; }
+    [JsonPropertyName("sizes")]
+    public string Sizes { get; set; }
     
     /// <summary>
     /// Описание
@@ -60,4 +60,10 @@ public class ProductViewModel
     /// </summary>
     [JsonPropertyName("category")]
     public virtual CategoryViewModel? Category { get; set; }
+    
+    [JsonPropertyName("brandid")]
+    public int BrandId { get; set; }
+    
+    [JsonPropertyName("brand")]
+    public virtual Brand Brand { get; set; }
 }

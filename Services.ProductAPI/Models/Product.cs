@@ -31,8 +31,11 @@ public class Product
     /// <summary>
     /// Разамер
     /// </summary>
-    [Column("size")]
-    public string Size { get; set; }
+    [Column("sizes")]
+    public string Sizes { get; set; }
+    
+    [Column("codeProduct")]
+    public int CodeProduct { get; set; }
     
     /// <summary>
     /// Описание
@@ -59,4 +62,8 @@ public class Product
     /// </summary>
     [ForeignKey("CategoryId")]
     public virtual Category Category { get; set; }
+    
+    public int BrandId { get; set; }
+    [ForeignKey("BrandId")]
+    public virtual Brand Brand { get; set; }
 }
