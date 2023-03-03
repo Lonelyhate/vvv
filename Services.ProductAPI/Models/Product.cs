@@ -34,6 +34,12 @@ public class Product
     [Column("sizes")]
     public string Sizes { get; set; }
     
+    /// <summary>
+    /// Пол
+    /// </summary>
+    [Column("gender")]
+    public Gender Gender { get; set; }
+    
     [Column("codeProduct")]
     public int CodeProduct { get; set; }
     
@@ -65,5 +71,6 @@ public class Product
     
     public int BrandId { get; set; }
     [ForeignKey("BrandId")]
+    
     public virtual Brand Brand { get; set; }
 }

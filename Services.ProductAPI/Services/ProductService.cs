@@ -64,6 +64,7 @@ public class ProductService : IProductService
                 CategoryId = requestModel.CategoryId,
                 Category = category,
                 Sizes = requestModel.Sizes,
+                Gender = requestModel.Gender,
                 Price = requestModel.Price,
                 CodeProduct = requestModel.CodeProduct,
                 Description = requestModel.Description

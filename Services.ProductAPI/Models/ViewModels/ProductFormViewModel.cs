@@ -10,6 +10,8 @@ public class ProductFormViewModel
     
     public string Sizes { get; set; }
     
+    public Gender Gender { get; set; }
+    
     public double Price { get; set; }
     
     public int CodeProduct { get; set; }

@@ -32,6 +32,12 @@ public class ProductViewModel
     public string Sizes { get; set; }
     
     /// <summary>
+    /// Пол
+    /// </summary>
+    [JsonPropertyName("gender")]
+    public Gender Gender { get; set; }
+    
+    /// <summary>
     /// Описание
     /// </summary>
     [JsonPropertyName("description")]
