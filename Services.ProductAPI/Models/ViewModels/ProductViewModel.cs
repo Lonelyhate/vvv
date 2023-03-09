@@ -44,6 +44,12 @@ public class ProductViewModel
     public string Description { get; set; }
     
     /// <summary>
+    /// Код продукта
+    /// </summary>
+    [JsonPropertyName("codeProduct")]
+    public int CodeProduct { get; set; }
+    
+    /// <summary>
     /// Изображения
     /// </summary>
     [JsonPropertyName("images")]
@@ -71,5 +77,5 @@ public class ProductViewModel
     public int BrandId { get; set; }
     
     [JsonPropertyName("brand")]
-    public virtual Brand Brand { get; set; }
+    public virtual Brand? Brand { get; set; }
 }

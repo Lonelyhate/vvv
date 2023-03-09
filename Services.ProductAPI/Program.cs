@@ -9,10 +9,10 @@ using Services.ProductAPI.Services.Interfaces;
 var builder = WebApplication.CreateBuilder(
     new WebApplicationOptions{WebRootPath = "static"});
 
+//builder.Services.AddDbContext<ApplicationDbContext>(options =>
+  //  options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectDB")));
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectDB")));
-/*builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectDBWork")));*/
+    options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectDBWork")));
 IMapper mapper = MappingService.RegisterMaps().CreateMapper();
 builder.Services.AddSingleton(mapper);
 builder.Services.AddScoped<IProductRepository, ProductRepository>();

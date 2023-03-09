@@ -21,7 +21,7 @@ public class ProductRepository : IProductRepository
 
     public async Task<Product> GetById(int id)
     {
-        var product = _db.Products.Where(p => p.Id == id).Include(p => p.Category).AsNoTracking();
+        var product = _db.Products.Where(p => p.Id == id).Include(p => p.Category).Include(p => p.Brand).ToList();
         return product.FirstOrDefault();
     }
 
