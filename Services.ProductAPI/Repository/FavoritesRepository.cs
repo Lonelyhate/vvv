@@ -25,8 +25,17 @@ public class FavoritesRepository : IFavoritesRepository
 
     public async Task<List<Favorites>> GetFavoritesByUserId(int userId)
     {
-        var favorites = _db.Favorites.Where(f => f.UserId == userId).Include(f => f.Product);
+        var favorites = _db.Favorites.Where(f => f.UserId == userId)
+            .Include(f => f.Product)
+            .Include(f => f.Product.Brand)
+            .Include(f => f.Product.Category);
         return favorites.ToList();
+    }
+
+    public async Task<Favorites> GetProductFromFavorites(int userId, int productId)
+    {
+        var favorites = _db.Favorites.Where(f => f.UserId == userId).Include(f => f.Product);
+        return await favorites.FirstOrDefaultAsync(f => f.ProductId == productId);
     }
 
     public async Task<bool> DeleteFavoritesById(Favorites model)
@@ -41,6 +50,5 @@ public class FavoritesRepository : IFavoritesRepository
         {
             return false;
         }
-        
     }
 }

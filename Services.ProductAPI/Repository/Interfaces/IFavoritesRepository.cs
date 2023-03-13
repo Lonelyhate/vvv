@@ -10,5 +10,7 @@ public interface IFavoritesRepository
 
     Task<List<Favorites>> GetFavoritesByUserId(int userId);
 
+    Task<Favorites> GetProductFromFavorites(int userId, int productId);
+
     Task<bool> DeleteFavoritesById(Favorites model);
 }

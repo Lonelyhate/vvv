@@ -21,11 +21,20 @@ public class FavoritesService : IFavoritesService
         _productRepository = productRepository;
     }
     
-    public async Task<FavoritesAddResponseModel> AddToFavorites(FavoritesAddRequestModel model, int userId)
+    public async Task<FavoritesAddResponseModel> AddToFavorites(FavoritesAddRequestModel model, int? userId)
     {
         try
         {
             var response = new FavoritesAddResponseModel();
+            
+            if (userId is null)
+            {
+                response.isSuccess = false;
+                response.DisplayMessage = "Не авторизован";
+                response.StatusCode = StatusCode.BadRequest;
+                return response;
+            }
+            
             var product = await _productRepository.GetById(model.ProductId);
             if (product is null)
             {
@@ -35,7 +44,7 @@ public class FavoritesService : IFavoritesService
                 return response;
             }
 
-            var favorites =  await _favoritesRepository.GetFavoritesByUserId(userId);
+            var favorites =  await _favoritesRepository.GetFavoritesByUserId((int)userId!);
             if (favorites.Any(f => f.ProductId == model.ProductId))
             {
                 response.isSuccess = false;
@@ -46,7 +55,7 @@ public class FavoritesService : IFavoritesService
 
             var favorite = await _favoritesRepository.AddToFavorites(new Favorites
             {
-                UserId = userId, 
+                UserId = (int)userId!, 
                 Product = product, 
                 ProductId = product.Id
             });
@@ -67,13 +76,21 @@ public class FavoritesService : IFavoritesService
         }
     }
 
-    public async Task<FavoritesGetByIdResponseModel> GetFavoritesById(int userId)
+    public async Task<FavoritesGetByIdResponseModel> GetFavoritesById(int? userId)
     {
         try
         {
             var response = new FavoritesGetByIdResponseModel();
 
-            var favorites = await _favoritesRepository.GetFavoritesByUserId(userId);
+            if (userId is null)
+            {
+                response.isSuccess = false;
+                response.DisplayMessage = "Не авторизован";
+                response.StatusCode = StatusCode.BadRequest;
+                return response;
+            }
+
+            var favorites = await _favoritesRepository.GetFavoritesByUserId((int)userId!);
             Console.WriteLine(favorites.Count);
             response.Data = _mapper.Map<List<ProductViewModel>>(favorites.Select(f => f.Product));
             response.StatusCode = StatusCode.OK;
@@ -91,13 +108,21 @@ public class FavoritesService : IFavoritesService
         }
     }
 
-    public async Task<FavoritesDeleteResponseModel> DeleteFavoritesById(int productId, int userId)
+    public async Task<FavoritesDeleteResponseModel> DeleteFavoritesById(int productId, int? userId)
     {
         try
         {
             var response = new FavoritesDeleteResponseModel();
+            
+            if (userId is null)
+            {
+                response.isSuccess = false;
+                response.DisplayMessage = "Не авторизован";
+                response.StatusCode = StatusCode.BadRequest;
+                return response;
+            }
 
-            var favorites = await _favoritesRepository.GetFavoritesByUserId(userId);
+            var favorites = await _favoritesRepository.GetFavoritesByUserId((int)userId!);
             if (favorites is null)
             {
                 response.isSuccess = false;
@@ -134,6 +159,48 @@ public class FavoritesService : IFavoritesService
             {
                 StatusCode = StatusCode.InternalServerError,
                 isSuccess = false,
+                DisplayMessage = "Ошибка сервера",
+                ErrorMessage = new List<string>() { e.ToString() }
+            };
+        }
+    }
+
+    public async Task<FavoritesCheckResponseModel> CheckFavorites(int productId, int? userId)
+    {
+        try
+        {
+            var response = new FavoritesCheckResponseModel();
+
+            if (userId is null)
+            {
+                response.isSuccess = false;
+                response.DisplayMessage = "Пользователь не авторизован";
+                response.StatusCode = StatusCode.BadRequest;
+                return response;
+            }
+
+            var favorties = await _favoritesRepository.GetProductFromFavorites((int)userId!, productId);
+            
+            if (favorties is null)
+            {
+                response.Data = false;
+            }
+            else
+            {
+                response.Data = true;
+            }
+
+            response.isSuccess = true;
+            response.StatusCode = StatusCode.OK;
+            return response;
+        }
+        catch (Exception e)
+        {
+            return new FavoritesCheckResponseModel
+            {
+                StatusCode = StatusCode.InternalServerError,
+                isSuccess = false,
+                Data = false,
                 DisplayMessage = "Ошибка сервера",
                 ErrorMessage = new List<string>() { e.ToString() }
             };

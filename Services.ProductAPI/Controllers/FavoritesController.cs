@@ -21,7 +21,7 @@ public class FavoritesController : Controller
     {
         var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        var response = await _favoritesService.AddToFavorites(model, Int32.Parse(userId));
+        var response = await _favoritesService.AddToFavorites(model, Int32.TryParse(userId, out var id) ? id : null);
 
         if (response.StatusCode == Models.StatusCode.BadRequest) return BadRequest(response);
 
@@ -35,7 +35,7 @@ public class FavoritesController : Controller
     {
         var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        var response = await _favoritesService.GetFavoritesById(Int32.Parse(userId));
+        var response = await _favoritesService.GetFavoritesById(Int32.TryParse(userId, out var id) ? id : null);
 
         if (response.StatusCode == Models.StatusCode.InternalServerError) return StatusCode(500, response);
 
@@ -47,12 +47,27 @@ public class FavoritesController : Controller
     {
         var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        var response = await _favoritesService.DeleteFavoritesById(id, Int32.Parse(userId));
+        var response = await _favoritesService.DeleteFavoritesById(id, Int32.TryParse(userId, out var idUser) ? idUser : null);
 
         if (response.StatusCode == Models.StatusCode.BadRequest) return BadRequest(response);
 
         if (response.StatusCode == Models.StatusCode.InternalServerError) return StatusCode(500, response);
 
         return Ok(response);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> CheckFavorites(int id)
+    {
+        var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        var response =
+            await _favoritesService.CheckFavorites(id, Int32.TryParse(userId, out var idUser) ? idUser : null);
+
+        if (response.StatusCode == Models.StatusCode.BadRequest) return BadRequest(response);
+
+        if (response.StatusCode == Models.StatusCode.InternalServerError) return StatusCode(500, response);
+
+        return Json(response);
     }
 }

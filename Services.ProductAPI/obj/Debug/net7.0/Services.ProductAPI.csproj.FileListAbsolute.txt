@@ -143,3 +143,4 @@ C:\projectDiplom\diplomProject\Services\Services.ProductAPI\Services.ProductAPI\
 C:\projectDiplom\diplomProject\Services\Services.ProductAPI\Services.ProductAPI\obj\Debug\net7.0\Services.ProductAPI.genruntimeconfig.cache
 C:\projectDiplom\diplomProject\Services\Services.ProductAPI\Services.ProductAPI\obj\Debug\net7.0\ref\Services.ProductAPI.dll
 C:\Users\nikit\Desktop\DiplomnayaRabota\Project\Services\Services.ProductAPI\Services.ProductAPI\bin\Debug\net7.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\projectDiplom\diplomProject\Services\Services.ProductAPI\Services.ProductAPI\bin\Debug\net7.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
