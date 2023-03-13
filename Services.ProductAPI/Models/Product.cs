@@ -71,6 +71,5 @@ public class Product
     
     public int BrandId { get; set; }
     [ForeignKey("BrandId")]
-    
     public virtual Brand Brand { get; set; }
 }
