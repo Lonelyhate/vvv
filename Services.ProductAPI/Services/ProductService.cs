@@ -99,29 +99,109 @@ public class ProductService : IProductService
             };
         }
     }
-
-    public async Task<ProductGetAllResponseModel> GetAllProducts(string? category, string? orderBy, int? take)
+    
+    public async Task<ProductGetAllResponseModel> GetAllProducts(string? category, string? orderBy, int? take, int? priceMin, int? priceMax, string? gender, string? sizes, string? brands, Sort? sort, bool? newProducts)
     {
         try
         {
             ProductGetAllResponseModel response = new ProductGetAllResponseModel();
+            
+            var products = await _productRepository.GetAll();
 
-            var products = new List<Product>();
-            if (category is null)
+            if (newProducts is not null && newProducts == true)
             {
-               products = await _productRepository.GetAll();
+                products = products.Where(p => p.DateCreated >= DateTime.Now.AddDays(-30)).ToList();
             }
 
             if (category is not null)
             {
-                products = await _productRepository.GetByCategory(category);
+                var categories = category.Split(";");
+                var tempProducts = new List<Product>();
+                foreach (var id in categories)
+                {
+                    var currentProducts = products.Where(p => p.CategoryId == Int32.Parse(id)).ToList();
+                    tempProducts.AddRange(currentProducts);
+                }
+
+                products = tempProducts;
             }
+
+            if (priceMin is not null)
+            {
+                products = products.Where(p => p.Price >= priceMin).ToList();
+            }
+
+            if (priceMax is not null)
+            {
+                products = products.Where(p => p.Price <= priceMax).ToList();
+            }
+
+            if (gender is not null)
+            {
+                var genders = gender.Split(";");
+                var tempProducts = new List<Product>();
+                foreach (var g in genders)
+                {
+                    var currentProducts = products.Where(p => (int)p.Gender == Int32.Parse(g)).ToList();
+                    tempProducts.AddRange(currentProducts);
+                }
+
+                products = tempProducts;
+            }
+
+            if (sizes is not null)
+            {
+                var szs = sizes.Split(";");
+                var tempProducts = new List<Product>();
+                foreach (var size in szs)
+                {
+                    var currentProduct = products.Where(p => p.Sizes.Split(";").Contains(size));
+                    tempProducts.AddRange(currentProduct);
+                }
+
+                products = tempProducts;
+            }
+
+            if (brands is not null)
+            {
+                var brds = brands.Split(";");
+                var tempProducts = new List<Product>();
+                foreach (var id in brds)
+                {
+                    var currentProduct = products.Where(p => p.BrandId == Int32.Parse(id));
+                    tempProducts.AddRange(currentProduct);
+                }
+
+                products = tempProducts;
+            }
+            
             if (products.Count == 0)
             {
                 response.isSuccess = false;
                 response.DisplayMessage = "Товар не найден";
                 response.StatusCode = StatusCode.NoContent;
                 return response;
+            }
+
+            if (sort is not null)
+            {
+                switch (sort)
+                {
+                    case Sort.AscendingPrice:
+                        products = products.OrderBy(p => p.Price).ToList();
+                        break;
+                    case Sort.PriceDescending:
+                        products = products.OrderByDescending(p => p.Price).ToList();
+                        break;
+                    case Sort.FirstOldProducts:
+                        products = products.OrderBy(p => p.DateCreated).ToList();
+                        break;
+                    case Sort.FirstNewProducts:
+                        products = products.OrderByDescending(p => p.DateCreated).ToList();
+                        break;
+                    default:
+                        break;
+                }
             }
 
             if (orderBy == "desc")
@@ -134,7 +214,13 @@ public class ProductService : IProductService
                 products = products.Take((int)take).ToList();
             }
 
-            response.Data = _mapper.Map<List<ProductViewModel>>(products);
+            response.Data = new ProductGetAllModel
+            {
+                Products = _mapper.Map<List<ProductViewModel>>(products),
+                Count = products.Count,
+                PriceMin = products.Min(p => (int)p.Price),
+                PriceMax = products.Max(p => (int)p.Price)
+            };
             response.StatusCode = StatusCode.OK;
             return response;
         }

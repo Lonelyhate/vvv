@@ -6,5 +6,5 @@ public interface IProductRepository : IBaseRepository<Product>
 {
     Task<Product> GetByName(string name);
 
-    Task<List<Product>> GetByCategory(string name);
+    Task<List<Product>> GetByCategory(string[] categories);
 }

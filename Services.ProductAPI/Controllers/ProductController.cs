@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Services.ProductAPI.Models;
 using Services.ProductAPI.Models.RequsetModels;
 using Services.ProductAPI.Models.ViewModels;
 using Services.ProductAPI.Services.Interfaces;
@@ -29,9 +30,9 @@ public class ProductController : Controller
     }
 
     [HttpGet("getall")]
-    public async Task<IActionResult> GetAllProduct(string? category, string? orderBy, int? take)
+    public async Task<IActionResult> GetAllProduct(string? category, string? orderBy, int? take, int? priceMin, int? priceMax, string? gender, string? sizes, string? brands, Sort? sort, bool newProducts = false)
     {
-        var response = await _productService.GetAllProducts(category, orderBy, take);
+        var response = await _productService.GetAllProducts(category, orderBy, take, priceMin, priceMax, gender, sizes, brands, sort, newProducts);
 
         if (response.StatusCode == Models.StatusCode.NoContent) return Json(response);
 

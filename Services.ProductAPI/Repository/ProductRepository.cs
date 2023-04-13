@@ -53,8 +53,15 @@ public class ProductRepository : IProductRepository
         return product;
     }
 
-    public async Task<List<Product>> GetByCategory(string name)
+    public async Task<List<Product>> GetByCategory(string[] category)
     {
-        return _db.Products.Include(p => p.Category).Where(p => p.Category.Name == name).ToList();
+        var products = new List<Product>();
+        foreach (var id in category)
+        {
+            var currentProduct = _db.Products.Include(p => p.Category).Include(p => p.Brand).Where(p => p.Category.Id == Int32.Parse(id));
+            products.AddRange(currentProduct);
+        }
+
+        return products;
     }
 }
