@@ -30,9 +30,9 @@ public class ProductController : Controller
     }
 
     [HttpGet("getall")]
-    public async Task<IActionResult> GetAllProduct(string? category, string? orderBy, int? take, int? priceMin, int? priceMax, string? gender, string? sizes, string? brands, Sort? sort, bool newProducts = false)
+    public async Task<IActionResult> GetAllProduct(string? search, string? category, string? orderBy, int? take, int? priceMin, int? priceMax, string? gender, string? sizes, string? brands, Sort? sort, bool newProducts = false)
     {
-        var response = await _productService.GetAllProducts(category, orderBy, take, priceMin, priceMax, gender, sizes, brands, sort, newProducts);
+        var response = await _productService.GetAllProducts(search, category, orderBy, take, priceMin, priceMax, gender, sizes, brands, sort, newProducts);
 
         if (response.StatusCode == Models.StatusCode.NoContent) return Json(response);
 

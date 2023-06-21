@@ -8,7 +8,7 @@ public interface IProductService
 {
     Task<ProductCreateResponseModel> CreateProduct(ProductFormViewModel requestModel);
 
-    Task<ProductGetAllResponseModel> GetAllProducts(string? category, string? orderBy, int? take, int? priceMin, int? priceMax, string? gender, string? sizes, string? brands, Sort? sort, bool? newProducts = false);
+    Task<ProductGetAllResponseModel> GetAllProducts(string? search, string? category, string? orderBy, int? take, int? priceMin, int? priceMax, string? gender, string? sizes, string? brands, Sort? sort, bool? newProducts = false);
 
     Task<ProductGetResponseModel> GetProductById(int id);
 

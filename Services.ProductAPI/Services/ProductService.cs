@@ -100,7 +100,7 @@ public class ProductService : IProductService
         }
     }
     
-    public async Task<ProductGetAllResponseModel> GetAllProducts(string? category, string? orderBy, int? take, int? priceMin, int? priceMax, string? gender, string? sizes, string? brands, Sort? sort, bool? newProducts)
+    public async Task<ProductGetAllResponseModel> GetAllProducts(string? search, string? category, string? orderBy, int? take, int? priceMin, int? priceMax, string? gender, string? sizes, string? brands, Sort? sort, bool? newProducts)
     {
         try
         {
@@ -174,10 +174,22 @@ public class ProductService : IProductService
 
                 products = tempProducts;
             }
+
+            if (search is not null)
+            {
+                products = products.Where(p => p.Name.ToLower().Contains(search.ToLower())).ToList();
+            }
             
             if (products.Count == 0)
             {
-                response.isSuccess = false;
+                response.isSuccess = true;
+                response.Data = new ProductGetAllModel()
+                {
+                    Count = 0,
+                    Products = new List<ProductViewModel>() {},
+                    PriceMax = 0,
+                    PriceMin = 0
+                };
                 response.DisplayMessage = "Товар не найден";
                 response.StatusCode = StatusCode.NoContent;
                 return response;
